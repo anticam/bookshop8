@@ -27,7 +27,8 @@
         "[production]": {
           "model": "db/hana"
         }
-      }
+      },
+      "html5-repo": true
     }
   }
 }
