@@ -144,3 +144,5 @@ vite.config.ts.timestamp-*
 .vite/
 mta_archives/
 gen/
+Makefile_*
+

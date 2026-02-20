@@ -27,6 +27,7 @@ modules:
     requires:
       - name: bookshop8-auth
       - name: bookshop8-db
+      - name: bookshop8-destination
 
   - name: bookshop8-db-deployer
     type: hdb
@@ -112,6 +113,38 @@ modules:
       supported-platforms:
         []
 
+  - name: bookshop8-destinations
+    type: com.sap.application.content
+    requires:
+      - name: bookshop8-auth
+        parameters:
+          service-key:
+            name: bookshop8-auth-key
+      - name: bookshop8-html5-repo-host
+        parameters:
+          service-key:
+            name: bookshop8-html5-repo-host-key
+      - name: srv-api
+      - name: bookshop8-destination
+        parameters:
+          content-target: true
+    build-parameters:
+      no-source: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: bookshop8-html5-repository
+              ServiceInstanceName: bookshop8-html5-repo-host
+              ServiceKeyName: bookshop8-html5-repo-host-key
+              sap.cloud.service: bookshop8.service
+            - Name: bookshop8-auth
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: bookshop8-auth
+              ServiceKeyName: bookshop8-auth-key
+              sap.cloud.service: bookshop8.service
+
 resources:
   - name: bookshop8-auth
     type: org.cloudfoundry.managed-service
@@ -142,3 +175,23 @@ resources:
     parameters:
       service: html5-apps-repo
       service-plan: app-host
+  - name: bookshop8-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Name: srv-api
+                URL: ~{srv-api/srv-url}
+                Authentication: NoAuthentication
+                Type: HTTP
+                ProxyType: Internet
+                HTML5.ForwardAuthToken: true
+                HTML5.DynamicDestination: true
+    requires:
+      - name: srv-api

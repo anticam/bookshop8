@@ -28,7 +28,9 @@
           "model": "db/hana"
         }
       },
-      "html5-repo": true
+      "html5-repo": true,
+      "destinations": true,
+      "workzone": true
     }
   }
 }
